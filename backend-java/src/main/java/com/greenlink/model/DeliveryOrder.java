@@ -1,0 +1,30 @@
+package com.greenlink.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "delivery_orders")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class DeliveryOrder extends BaseEntity {
+
+    @Column(nullable = false)
+    private Double latitude;
+
+    @Column(nullable = false)
+    private Double longitude;
+
+    @Column(nullable = false)
+    private Integer weightKg;
+
+    // Time to unload the package (e.g., 15 mins)
+    @Column(nullable = false)
+    private Integer serviceDurationMin;
+
+    // Status: "UNASSIGNED" (Waiting), "ASSIGNED" (On a truck), "COMPLETED"
+    @Column(nullable = false)
+    private String status = "UNASSIGNED";
+}

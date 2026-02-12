@@ -4,6 +4,7 @@ import com.greenlink.service.RoutingService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.greenlink.model.Route;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class RouteController {
     }
 
     @PostMapping("/optimize")
-    public List<Map<String, Object>> optimize() {
+    public List<Route> optimizeRoutes() {
         return routingService.optimizeRoutes();
     }
 }

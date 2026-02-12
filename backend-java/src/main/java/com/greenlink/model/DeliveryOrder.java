@@ -27,4 +27,9 @@ public class DeliveryOrder extends BaseEntity {
     // Status: "UNASSIGNED" (Waiting), "ASSIGNED" (On a truck), "COMPLETED"
     @Column(nullable = false)
     private String status = "UNASSIGNED";
+
+    // ... existing fields ...
+    @ManyToOne
+    @JoinColumn(name = "route_id")
+    private Route route;
 }

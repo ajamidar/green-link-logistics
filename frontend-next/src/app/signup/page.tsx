@@ -13,13 +13,30 @@ export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState<Role>("DISPATCHER");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const passwordRequirements = [
+    { label: "At least 8 characters", isMet: password.length >= 8 },
+    { label: "One uppercase letter", isMet: /[A-Z]/.test(password) },
+    { label: "One lowercase letter", isMet: /[a-z]/.test(password) },
+    { label: "One number", isMet: /[0-9]/.test(password) },
+    { label: "One special character", isMet: /[^A-Za-z0-9]/.test(password) },
+  ];
+
+  const isPasswordStrong = passwordRequirements.every((rule) => rule.isMet);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
+
+    if (!isPasswordStrong) {
+      setError("Password does not meet the security requirements.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -82,14 +99,36 @@ export default function SignupPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 focus:border-emerald-500 focus:outline-none"
-              placeholder="••••••••"
-            />
+            <div className="relative mt-1">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 pr-10 text-slate-900 focus:border-emerald-500 focus:outline-none"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-2 flex items-center text-xs font-semibold text-slate-500 hover:text-slate-700"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+            <div className="mt-3 grid gap-2 text-xs text-slate-500">
+              {passwordRequirements.map((rule) => (
+                <div key={rule.label} className="flex items-center gap-2">
+                  <span
+                    className={`h-2 w-2 rounded-full ${rule.isMet ? "bg-emerald-500" : "bg-slate-300"}`}
+                  />
+                  <span className={rule.isMet ? "text-emerald-700" : "text-slate-500"}>
+                    {rule.label}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700">Role</label>
@@ -107,7 +146,7 @@ export default function SignupPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !isPasswordStrong}
             className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300"
           >
             {loading ? "Creating account..." : "Sign Up"}

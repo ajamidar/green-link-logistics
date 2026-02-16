@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Driver, Order, Route, Vehicle } from "./types";
+import { AccountProfile, Driver, Order, Route, Vehicle } from "./types";
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -152,3 +152,21 @@ export async function fetchDriverRoute(): Promise<{
 export async function markOrderDelivered(orderId: string): Promise<void> {
     await apiClient.patch(`/driver/orders/${orderId}/delivered`);
 }
+
+export const fetchAccountProfile = async (): Promise<AccountProfile> => {
+    const response = await apiClient.get<AccountProfile>("/account");
+    return response.data;
+};
+
+export const updateAccountProfile = async (payload: {
+    email?: string;
+    fullName?: string;
+    phoneNumber?: string;
+}): Promise<AccountProfile> => {
+    const response = await apiClient.put<AccountProfile>("/account", payload);
+    return response.data;
+};
+
+export const deleteAccountProfile = async (): Promise<void> => {
+    await apiClient.delete("/account");
+};

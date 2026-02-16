@@ -3,7 +3,7 @@
 
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import { Order, Route, Vehicle } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import polyline from "@mapbox/polyline";
@@ -82,7 +82,10 @@ export default function Map({ orders = [], routes = [], vehicles = [], focus, fo
   const [routeGeometries, setRouteGeometries] = useState<globalThis.Map<string, [number, number][]>>(new globalThis.Map());
   const [mapKey, setMapKey] = useState(0);
   const defaultCenter: [number, number] = [40.7128, -74.0060];
-  const orderById = new globalThis.Map(orders.map((order) => [String(order.id), order]));
+  const orderById = useMemo(
+    () => new globalThis.Map(orders.map((order) => [String(order.id), order])),
+    [orders]
+  );
 
   useEffect(() => {
     setIsClient(true);

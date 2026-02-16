@@ -51,6 +51,15 @@ export interface Driver {
   lastCheckIn?: string;
 }
 
+export interface AccountProfile {
+  id: string;
+  email: string;
+  role: "DISPATCHER" | "DRIVER";
+  fullName?: string | null;
+  phoneNumber?: string | null;
+  createdAt?: string | null;
+}
+
 export type RouteStop =
   | Order
   | string

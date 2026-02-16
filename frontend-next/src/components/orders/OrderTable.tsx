@@ -71,7 +71,9 @@ export default function OrderTable({ orders, onDelete, assignedVehicleByOrderId 
                   <div className="text-[11px] uppercase text-slate-400 sm:hidden">Status</div>
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                      ${order.status === "ASSIGNED" 
+                      ${order.status === "DELIVERED"
+                        ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+                        : order.status === "ASSIGNED"
                         ? "bg-green-100 text-green-800 border-green-200"
                         : "bg-yellow-100 text-yellow-800 border-yellow-200"
                       }`}

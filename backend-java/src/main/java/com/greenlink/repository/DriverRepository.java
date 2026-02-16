@@ -13,4 +13,5 @@ public interface DriverRepository extends JpaRepository<Driver, UUID> {
 	List<Driver> findByOrganizationId(UUID organizationId);
 	Optional<Driver> findByIdAndOrganizationId(UUID id, UUID organizationId);
 	Optional<Driver> findByEmailAndOrganizationId(String email, UUID organizationId);
+	Optional<Driver> findFirstByEmailIgnoreCase(String email);
 }

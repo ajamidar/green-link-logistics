@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { fetchDriverRoute, markOrderDelivered } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { fetchAccountProfile, fetchDriverRoute, markOrderDelivered } from "@/lib/api";
 import { Route, Order } from "@/lib/types";
 import dynamic from "next/dynamic";
 import { CheckCircle2, MapPin } from "lucide-react";
+import Link from "next/link";
 
 const Map = dynamic(() => import("@/components/dashboard/Map"), {
   ssr: false,
@@ -14,6 +16,7 @@ const Map = dynamic(() => import("@/components/dashboard/Map"), {
 });
 
 export default function DriverPortalPage() {
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [route, setRoute] = useState<Route | null>(null);
   const [driverName, setDriverName] = useState<string | null>(null);
@@ -56,14 +59,19 @@ export default function DriverPortalPage() {
   const loadRoute = async () => {
     try {
       setLoading(true);
-      const data = await fetchDriverRoute();
-      setDriverName(data.driverName);
-      setVehicleName(data.vehicleName);
+      const [routeData, accountData] = await Promise.all([
+        fetchDriverRoute(),
+        fetchAccountProfile(),
+      ]);
+      setDriverName(accountData.fullName || routeData.driverName);
+      setVehicleName(routeData.vehicleName);
       setEtaMinutes(
-        typeof data.estimatedRemainingMinutes === "number" ? data.estimatedRemainingMinutes : null
+        typeof routeData.estimatedRemainingMinutes === "number"
+          ? routeData.estimatedRemainingMinutes
+          : null
       );
 
-      const mappedOrders: Order[] = data.stops.map((stop) => ({
+      const mappedOrders: Order[] = routeData.stops.map((stop) => ({
         id: stop.id,
         organizationId: "",
         weightKg: 0,
@@ -78,7 +86,7 @@ export default function DriverPortalPage() {
       setRoute({
         id: "driver-route",
         organizationId: "",
-        status: data.routeStatus ?? "PLANNED",
+        status: routeData.routeStatus ?? "PLANNED",
         orders: mappedOrders,
       });
       setError(null);
@@ -88,6 +96,12 @@ export default function DriverPortalPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem("gl_token");
+    document.cookie = "gl_token=; Path=/; Max-Age=0; SameSite=Lax";
+    router.push("/login");
   };
 
   const handleDelivered = async (orderId: string) => {
@@ -122,12 +136,26 @@ export default function DriverPortalPage() {
           <h1 className="mt-2 text-2xl font-semibold text-white">{driverName || "Your route"}</h1>
           <p className="text-sm text-slate-300">Vehicle: {vehicleName || "Unassigned"}</p>
         </div>
-        <button
-          onClick={loadRoute}
-          className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-white/90"
-        >
-          Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/driver/account"
+            className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-white/90"
+          >
+            Account
+          </Link>
+          <button
+            onClick={handleSignOut}
+            className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-white/90"
+          >
+            Sign out
+          </button>
+          <button
+            onClick={loadRoute}
+            className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-white/90"
+          >
+            Refresh
+          </button>
+        </div>
       </header>
 
       {error ? (

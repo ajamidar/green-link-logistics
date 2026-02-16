@@ -2,11 +2,16 @@
 
 .bg-landing-grid {
 	background-image:
-		radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.2), transparent 45%),
-		radial-gradient(circle at 80% 30%, rgba(251, 191, 36, 0.15), transparent 50%),
-		linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+		radial-gradient(circle at 15% 10%, rgba(16, 185, 129, 0.22), transparent 45%),
+		radial-gradient(circle at 85% 15%, rgba(251, 191, 36, 0.22), transparent 50%),
+		linear-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(15, 23, 42, 0.08) 1px, transparent 1px);
 	background-size: auto, auto, 72px 72px, 72px 72px;
+}
+
+.bg-landing-sunrise {
+	background-image:
+		linear-gradient(180deg, #f8fafc 0%, #f0fdf4 45%, #fff7ed 100%);
 }
 
 @keyframes reveal-up {
@@ -26,4 +31,8 @@
 
 .reveal.delay-1 {
 	animation-delay: 0.12s;
+}
+
+button:hover {
+	cursor: pointer;
 }

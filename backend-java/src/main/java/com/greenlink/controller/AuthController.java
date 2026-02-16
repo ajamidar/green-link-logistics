@@ -5,6 +5,7 @@ import com.greenlink.dto.AuthRegisterRequest;
 import com.greenlink.dto.AuthResponse;
 import com.greenlink.model.Role;
 import com.greenlink.model.User;
+import com.greenlink.repository.DriverRepository;
 import com.greenlink.repository.UserRepository;
 import com.greenlink.security.JwtService;
 import org.springframework.http.HttpStatus;
@@ -23,17 +24,20 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final DriverRepository driverRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     public AuthController(
             AuthenticationManager authenticationManager,
             UserRepository userRepository,
+            DriverRepository driverRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService
     ) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.driverRepository = driverRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
@@ -48,7 +52,14 @@ public class AuthController {
         user.setUsername(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole() == null ? Role.DISPATCHER : request.getRole());
-        user.setOrganizationId(java.util.UUID.randomUUID());
+        user.setFullName(request.getName());
+        if (user.getRole() == Role.DRIVER) {
+            var matchingDriver = driverRepository.findFirstByEmailIgnoreCase(request.getEmail());
+            user.setOrganizationId(matchingDriver.map(com.greenlink.model.Driver::getOrganizationId)
+                    .orElse(java.util.UUID.randomUUID()));
+        } else {
+            user.setOrganizationId(java.util.UUID.randomUUID());
+        }
 
         User savedUser = userRepository.save(user);
         String token = jwtService.generateToken(savedUser);
@@ -63,6 +74,13 @@ public class AuthController {
         );
 
         User user = userRepository.findByUsername(request.getEmail()).orElseThrow();
+        if (user.getRole() == Role.DRIVER) {
+            var matchingDriver = driverRepository.findFirstByEmailIgnoreCase(user.getUsername());
+            if (matchingDriver.isPresent() && !matchingDriver.get().getOrganizationId().equals(user.getOrganizationId())) {
+                user.setOrganizationId(matchingDriver.get().getOrganizationId());
+                user = userRepository.save(user);
+            }
+        }
         if (user.getOrganizationId() == null) {
             user.setOrganizationId(java.util.UUID.randomUUID());
             user = userRepository.save(user);

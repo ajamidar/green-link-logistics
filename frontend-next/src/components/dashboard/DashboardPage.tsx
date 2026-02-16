@@ -3,7 +3,7 @@
 import OrderList from "@/components/dashboard/OrderList";
 import { Order, Route, Vehicle } from "@/lib/types";
 import { fetchOrders, fetchVehicles, fetchRoutes, optimizeRoutes } from "@/lib/api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Zap, RefreshCw } from "lucide-react";
 import dynamic from "next/dynamic";
 import clsx from "clsx";
@@ -26,6 +26,36 @@ export default function DashboardPage() {
   const [mobileView, setMobileView] = useState<"orders" | "map">("orders");
   const [isClient, setIsClient] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const liveRefreshMs = 15000;
+
+  const loadData = useCallback(async (options?: { silent?: boolean }) => {
+    const silent = options?.silent ?? false;
+    try {
+      if (!silent) {
+        setLoading(true);
+      }
+      const [orderData, vehicleData, routeData] = await Promise.all([
+        fetchOrders(),
+        fetchVehicles(),
+        fetchRoutes(),
+      ]);
+      setOrders(orderData);
+      setVehicles(vehicleData);
+      setRoutes(routeData);
+      setLastUpdated(new Date());
+    } catch (error) {
+      console.error("Failed to load orders:", error);
+      if (!silent) {
+        alert("Error connecting to backend.");
+      }
+    } finally {
+      if (!silent) {
+        setLoading(false);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     setIsClient(true);
@@ -39,26 +69,15 @@ export default function DashboardPage() {
     loadData();
 
     return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  }, [loadData]);
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const [orderData, vehicleData, routeData] = await Promise.all([
-        fetchOrders(),
-        fetchVehicles(),
-        fetchRoutes(),
-      ]);
-      setOrders(orderData);
-      setVehicles(vehicleData);
-      setRoutes(routeData);
-    } catch (error) {
-      console.error("Failed to load orders:", error);
-      alert("Error connecting to backend.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      loadData({ silent: true });
+    }, liveRefreshMs);
+
+    return () => window.clearInterval(intervalId);
+  }, [loadData, liveRefreshMs]);
 
   const handleOptimize = async () => {
     try {
@@ -126,6 +145,13 @@ export default function DashboardPage() {
     }
   };
 
+  const totalOrders = orders.length;
+  const assignedOrders = orders.filter((order) => order.status === "ASSIGNED").length;
+  const deliveredOrders = orders.filter((order) => order.status === "DELIVERED").length;
+  const unassignedOrders = totalOrders - assignedOrders - deliveredOrders;
+  const availableVehicles = vehicles.filter((vehicle) => (vehicle.status || "AVAILABLE") === "AVAILABLE").length;
+  const inTransitVehicles = vehicles.filter((vehicle) => vehicle.status === "IN_TRANSIT").length;
+
   return (
     <div className="flex flex-col gap-6 min-h-[calc(100vh-6rem)] md:h-[calc(100vh-6rem)]">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -136,7 +162,7 @@ export default function DashboardPage() {
 
         <div className="flex w-full flex-col gap-2 sm:flex-row md:w-auto">
           <button
-            onClick={loadData}
+            onClick={() => loadData()}
             className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-100 sm:w-auto"
           >
             <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
@@ -152,6 +178,44 @@ export default function DashboardPage() {
             {optimizing ? "Optimizing..." : "Optimize Routes"}
           </button>
         </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-4 xl:grid-cols-6">
+        <div className="space-y-1 rounded-lg border border-slate-100 bg-slate-50 p-3">
+          <p className="text-xs uppercase tracking-wide text-slate-500">Total Orders</p>
+          <p className="text-2xl font-semibold text-slate-900">{totalOrders}</p>
+        </div>
+        <div className="space-y-1 rounded-lg border border-amber-100 bg-amber-50 p-3">
+          <p className="text-xs uppercase tracking-wide text-amber-600">Unassigned</p>
+          <p className="text-2xl font-semibold text-amber-900">{unassignedOrders}</p>
+        </div>
+        <div className="space-y-1 rounded-lg border border-blue-100 bg-blue-50 p-3">
+          <p className="text-xs uppercase tracking-wide text-blue-600">Assigned</p>
+          <p className="text-2xl font-semibold text-blue-900">{assignedOrders}</p>
+        </div>
+        <div className="space-y-1 rounded-lg border border-emerald-100 bg-emerald-50 p-3">
+          <p className="text-xs uppercase tracking-wide text-emerald-600">Delivered</p>
+          <p className="text-2xl font-semibold text-emerald-900">{deliveredOrders}</p>
+        </div>
+        <div className="space-y-1 rounded-lg border border-slate-100 bg-slate-50 p-3">
+          <p className="text-xs uppercase tracking-wide text-slate-500">Vehicles Ready</p>
+          <p className="text-2xl font-semibold text-slate-900">{availableVehicles}</p>
+        </div>
+        <div className="space-y-1 rounded-lg border border-slate-100 bg-slate-50 p-3">
+          <p className="text-xs uppercase tracking-wide text-slate-500">In Transit</p>
+          <p className="text-2xl font-semibold text-slate-900">{inTransitVehicles}</p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+        <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-emerald-700">
+          Live updates every {Math.round(liveRefreshMs / 1000)}s
+        </span>
+        <span>
+          {lastUpdated
+            ? `Last refreshed ${lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+            : "Waiting for first refresh"}
+        </span>
       </div>
 
       <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-1 shadow-sm md:hidden">

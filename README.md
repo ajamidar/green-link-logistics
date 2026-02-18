@@ -21,7 +21,6 @@ Built with a cutting-edge tech stack, GreenLink demonstrates a seamless integrat
 ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![Pandas](https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white)
-![Google OR-Tools](https://img.shields.io/badge/Google_OR_Tools-4285F4?style=for-the-badge&logo=google&logoColor=white)
 
 ### **DevOps & Cloud**
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
@@ -52,7 +51,7 @@ Built with a cutting-edge tech stack, GreenLink demonstrates a seamless integrat
 ### 📱 Mobile-First Driver Portal
 
 * **Dedicated Interface:** A simplified, distraction-free web view designed for mobile devices.
-* **One-Tap Navigation:** Deep integration with **Google Maps/Waze** for instant turn-by-turn directions.
+* **One-Tap Navigation:** Simply choose your next stop, or change you start point.
 * **Status Updates:** Drivers can mark orders as "DELIVERED" with a single tap, syncing instantly with the dashboard.
 
 ### 🚛 Fleet & Order Management

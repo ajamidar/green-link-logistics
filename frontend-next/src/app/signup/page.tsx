@@ -4,7 +4,16 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+const API_BASE_URL = (() => {
+  if (typeof window !== "undefined") {
+    return (
+      process.env.NEXT_PUBLIC_API_BASE_URL ??
+      window.location.origin.replace(":3000", ":8080")
+    );
+  }
+
+  return process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+})();
 
 type Role = "DISPATCHER" | "DRIVER";
 

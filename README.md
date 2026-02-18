@@ -8,17 +8,26 @@ Built with a cutting-edge tech stack, GreenLink demonstrates a seamless integrat
 
 ## ⚙️ Tech Stack
 
-* **TypeScript**
-* **Next.js 14 (App Router)**
-* **Tailwind CSS**
-* **Java 17 (Spring Boot 3)**
-* **Spring Security (JWT)**
-* **PostgreSQL**
-* **Python 3.9 + Pandas**
-* **Google OR-Tools**
-* **Docker & Docker Compose**
-* **AWS (EC2, RDS)**
-* **React Leaflet (OpenStreetMap)**
+### **Frontend**
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Leaflet](https://img.shields.io/badge/Leaflet-199900?style=for-the-badge&logo=Leaflet&logoColor=white)
+
+### **Backend**
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=Spring-Security&logoColor=white)
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Pandas](https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white)
+![Google OR-Tools](https://img.shields.io/badge/Google_OR_Tools-4285F4?style=for-the-badge&logo=google&logoColor=white)
+
+### **DevOps & Cloud**
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
+
+---
 
 ## 🔋 Features
 

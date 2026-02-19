@@ -17,9 +17,6 @@ const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Cache-Control': 'no-cache, no-store, must-revalidate',
-    'Pragma': 'no-cache',
-    'Expires': '0',
   },
 });
 
@@ -29,13 +26,6 @@ apiClient.interceptors.request.use((config) => {
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-    }
-    // Add timestamp to cache-bust GET requests
-    if (config.method === 'get') {
-        config.params = {
-            ...config.params,
-            _t: new Date().getTime(),
-        };
     }
     return config;
 });

@@ -27,6 +27,7 @@ export default function DashboardPage() {
   const [isClient, setIsClient] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [currentToken, setCurrentToken] = useState<string | null>(null);
 
   const liveRefreshMs = 15000;
 
@@ -78,6 +79,22 @@ export default function DashboardPage() {
 
     return () => window.clearInterval(intervalId);
   }, [loadData, liveRefreshMs]);
+
+  // Detect token changes (new user logged in) and reload all data
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('gl_token') : null;
+    
+    if (token && token !== currentToken) {
+      setCurrentToken(token);
+      // Clear previous user's data when token changes
+      setOrders([]);
+      setVehicles([]);
+      setRoutes([]);
+      setLastUpdated(null);
+      // Reload with new token
+      loadData();
+    }
+  }, [currentToken, loadData]);
 
   const handleOptimize = async () => {
     try {

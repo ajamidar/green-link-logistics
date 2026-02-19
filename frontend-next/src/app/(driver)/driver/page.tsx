@@ -25,6 +25,7 @@ export default function DriverPortalPage() {
   const [error, setError] = useState<string | null>(null);
   const [focusedStopId, setFocusedStopId] = useState<string | null>(null);
   const [etaMinutes, setEtaMinutes] = useState<number | null>(null);
+  const [currentToken, setCurrentToken] = useState<string | null>(null);
 
   const mapOrders = useMemo(
     () => orders.filter((order) => Number.isFinite(order.latitude) && Number.isFinite(order.longitude)),
@@ -62,6 +63,25 @@ export default function DriverPortalPage() {
 
     return () => clearInterval(intervalId);
   }, []);
+
+  // Detect token changes (new user logged in) and reload all data
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('gl_token') : null;
+    
+    if (token && token !== currentToken) {
+      setCurrentToken(token);
+      // Clear previous user's data when token changes
+      setOrders([]);
+      setRoute(null);
+      setVehicleName(null);
+      setDriverName(null);
+      setEtaMinutes(null);
+      setFocusedStopId(null);
+      setError(null);
+      // Reload with new token
+      loadRoute(false);
+    }
+  }, [currentToken]);
 
   const loadRoute = async (silent = false) => {
     try {

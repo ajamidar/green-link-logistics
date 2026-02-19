@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { DM_Serif_Display, Space_Grotesk } from "next/font/google";
 import { Route, ShieldCheck, Zap, Leaf, Clock, LineChart } from "lucide-react";
+import CountUp from "@/components/CountUp";
 
 const headingFont = DM_Serif_Display({ subsets: ["latin"], weight: "400" });
 const bodyFont = Space_Grotesk({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
@@ -106,11 +107,11 @@ export default function Home() {
                 </div>
                 <div className="mt-10 flex flex-wrap gap-6 text-sm text-slate-600">
                   <div>
-                    <p className="text-2xl font-semibold text-slate-900">18%</p>
-                    Average route cost reduction
+                    <p className="text-2xl font-semibold text-slate-900"><CountUp target={25} suffix="%" duration={2000} /></p>
+                    Route cost reduction
                   </div>
                   <div>
-                    <p className="text-2xl font-semibold text-slate-900">2.5x</p>
+                    <p className="text-2xl font-semibold text-slate-900"><CountUp target={25} suffix="x" duration={2000} isDecimal /></p>
                     Faster dispatch planning
                   </div>
                   <div>
@@ -127,8 +128,8 @@ export default function Home() {
                     <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs text-emerald-700">Realtime</span>
                   </div>
                   <div className="mt-6 space-y-4">
-                    {["North Loop", "Hudson Drop", "Midtown Express"].map((route, index) => (
-                      <div key={route} className="rounded-2xl border border-slate-200 bg-white p-4">
+                    {["SP67 TMX", "BU09 K78", "PL74 S53"].map((route, index) => (
+                      <div key={route} className="rounded-2xl border border-slate-200 bg-white p-4 hover:scale-[1.01] transition-transform">
                         <div className="flex items-center justify-between">
                           <p className="font-semibold text-slate-900">{route}</p>
                           <span className="text-xs text-slate-500">ETA {index + 1}h</span>
@@ -220,14 +221,16 @@ export default function Home() {
               </div>
               <div className="mt-8 grid gap-4 md:grid-cols-2">
                 {[
-                  { label: "Active routes", value: "24" },
-                  { label: "Vehicles online", value: "58" },
-                  { label: "Orders in motion", value: "312" },
-                  { label: "Avg. ETA variance", value: "-9 min" },
+                  { label: "Active routes", value: "24", isAnimated: true },
+                  { label: "Vehicles online", value: "58", isAnimated: true },
+                  { label: "Orders in motion", value: "312", isAnimated: true },
+                  { label: "Avg. ETA variance", value: "-9 min", isAnimated: false },
                 ].map((stat) => (
                   <div key={stat.label} className="rounded-2xl bg-white p-4 shadow-sm">
                     <p className="text-xs uppercase text-slate-400">{stat.label}</p>
-                    <p className="mt-2 text-2xl font-semibold text-slate-900">{stat.value}</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">
+                      {stat.isAnimated ? <CountUp target={parseInt(stat.value)} duration={2000} /> : stat.value}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -257,12 +260,12 @@ export default function Home() {
             </div>
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-center gap-3">
-                <span className="text-3xl text-slate-900">94%</span>
+                <span className="text-3xl text-slate-900"><CountUp target={94} suffix="%" duration={2000} /></span>
                 <p className="text-sm text-slate-600">of teams improve on-time performance within 30 days.</p>
               </div>
               <div className="mt-6 border-t border-slate-200 pt-6">
                 <p className="text-sm text-slate-600">Average savings per week</p>
-                <p className="mt-2 text-3xl font-semibold text-slate-900">$8,420</p>
+                <p className="mt-2 text-3xl font-semibold text-slate-900">£<CountUp target={8420} duration={2500} /></p>
                 <p className="mt-1 text-xs text-slate-500">Based on 40-vehicle fleets.</p>
               </div>
             </div>
@@ -319,7 +322,7 @@ export default function Home() {
                   href="/login"
                   className="rounded-full border border-slate-300 px-5 py-2 text-xs font-semibold text-slate-700 hover:border-slate-400"
                 >
-                  Talk to sales
+                  Book a demo
                 </Link>
               </div>
             </div>
@@ -337,10 +340,10 @@ export default function Home() {
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-600">Contact</p>
               <ul className="mt-4 space-y-2 text-sm">
-                <li>dispatch@greenlink.com</li>
-                <li>+1 (415) 555-0198</li>
-                <li>San Francisco, CA</li>
-                <li className="text-xs text-slate-500">Mon-Fri, 8am-6pm PT</li>
+                <li>jamidararnav@gmail.com</li>
+                <li>+44 7443735548</li>
+                <li>York, England</li>
+                <li className="text-xs text-slate-500">Mon-Fri, 8am-6pm GMT</li>
               </ul>
             </div>
           </div>
@@ -348,9 +351,9 @@ export default function Home() {
           <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-6 text-xs text-slate-500">
             <span>© 2026 Green Link Logistics. All rights reserved.</span>
             <div className="flex gap-4">
-              <span className="hover:text-slate-700">Privacy</span>
-              <span className="hover:text-slate-700">Terms</span>
-              <span className="hover:text-slate-700">Security</span>
+              <a href="/pdfs/PRIVACY POLICY FOR GREENLINK LOGISTICS.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-slate-700 cursor-pointer">Privacy</a>
+            <a href="/pdfs/TERMS AND CONDITIONS FOR GREENLINK LOGISTICS.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-slate-700 cursor-pointer">Terms</a>
+              <a href="/pdfs/SECURITY POLICY FOR GREENLINK LOGISTICS.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-slate-700 cursor-pointer">Security</a>
             </div>
           </div>
         </div>

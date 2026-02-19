@@ -53,12 +53,21 @@ export default function DriverPortalPage() {
   );
 
   useEffect(() => {
-    loadRoute();
+    loadRoute(false);
+
+    // Auto-refresh route data every 10 seconds to sync with dispatcher updates
+    const intervalId = setInterval(() => {
+      loadRoute(true); // silent mode - don't show loading state
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(intervalId);
   }, []);
 
-  const loadRoute = async () => {
+  const loadRoute = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) {
+        setLoading(true);
+      }
       const [routeData, accountData] = await Promise.all([
         fetchDriverRoute(),
         fetchAccountProfile(),
@@ -92,9 +101,13 @@ export default function DriverPortalPage() {
       setError(null);
       setFocusedStopId((prev) => prev ?? (mappedOrders.find((order) => order.status !== "DELIVERED")?.id ?? null));
     } catch (err) {
-      setError("Unable to load your route. Please contact dispatch.");
+      if (!silent) {
+        setError("Unable to load your route. Please contact dispatch.");
+      }
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   };
 
@@ -158,7 +171,7 @@ export default function DriverPortalPage() {
             Sign out
           </button>
           <button
-            onClick={loadRoute}
+            onClick={() => loadRoute(false)}
             className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-white/90"
           >
             Refresh

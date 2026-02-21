@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 
-const API_BASE_URL = (() => {
+const apiRoot = (() => {
   if (typeof window !== "undefined") {
     return (
       process.env.NEXT_PUBLIC_API_BASE_URL ??
@@ -14,6 +14,7 @@ const API_BASE_URL = (() => {
 
   return process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 })();
+const API_BASE_URL = `${apiRoot.replace(/\/$/, "")}/api`;
 
 export default function LoginPage() {
   const router = useRouter();

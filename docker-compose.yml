@@ -33,7 +33,7 @@ services:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-      APP_CORS_ALLOWED_ORIGINS: http://localhost:3000
+      APP_CORS_ALLOWED_ORIGINS: http://44.204.109.54,http://44.204.109.54:3000,http://greenlink.website,http://www.greenlink.website,https://greenlink.website,https://www.greenlink.website
       APP_OSRM_BASE_URL: ${APP_OSRM_BASE_URL}
       APP_SOLVER_BASE_URL: ${APP_SOLVER_BASE_URL}
       JWT_SECRET: ChangeMeToA32ByteMinimumSecretKey123456
@@ -48,7 +48,20 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:8080
+      NEXT_PUBLIC_API_BASE_URL: http://44.204.109.54
     depends_on:
       - backend-java
 
+  nginx:
+    image: nginx:alpine
+    container_name: greenlink_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - frontend-next
+      - backend-java
